@@ -23,12 +23,37 @@ from dotenv import load_dotenv
 
 load_dotenv()
 os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
+import os
+from dotenv import load_dotenv
 
-app = FastAPI(title="IntelliJect API", description="Smart PYQ-PDF Enhancer API")
+# Load environment variables
+load_dotenv()
 
+# Environment-specific configuration
+ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+if ENVIRONMENT == "production":
+    # Production settings
+    app = FastAPI(title="IntelliJect API", docs_url=None, redoc_url=None)
+else:
+    # Development settings
+    app = FastAPI(title="IntelliJect API")
+
+
+# Production configuration
+app = FastAPI(
+    title="IntelliJect API", 
+    description="Smart PYQ-PDF Enhancer API",
+    docs_url="/docs" if os.getenv("ENVIRONMENT") != "production" else None,
+    redoc_url="/redoc" if os.getenv("ENVIRONMENT") != "production" else None
+)
+
+# CORS middleware for production
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"],  # Configure specific domains in production
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

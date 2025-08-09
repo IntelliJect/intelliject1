@@ -2,8 +2,13 @@ services:
   - type: web
     name: intelliject-api
     env: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn fastapi_app:app --host 0.0.0.0 --port $PORT --worker-class uvicorn.workers.UvicornWorker
+    region: oregon
+    plan: starter
+    buildCommand: |
+      pip install --upgrade pip
+      pip install -r requirements.txt
+      python -c "import nltk; nltk.download('punkt')"
+    startCommand: gunicorn fastapi_app:app --host 0.0.0.0 --port $PORT --worker-class uvicorn.workers.UvicornWorker --timeout 120
     envVars:
       - key: OPENAI_API_KEY
         sync: false
