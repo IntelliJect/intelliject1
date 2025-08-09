@@ -6,19 +6,22 @@ import os
 
 # Load environment variables from .env
 load_dotenv()
+import os
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 
-# Create the database URL from environment variable
-DATABASE_URL = os.getenv(
-    "DATABASE_URL",
-    "postgresql+psycopg2://username:password@localhost:5432/intelliject"
-)
+# Render automatically provides DATABASE_URL when database is linked
+DATABASE_URL = os.getenv("DATABASE_URL")
 
-# Setup engine and session
+if not DATABASE_URL:
+    # Fallback for local development
+    DATABASE_URL = "postgresql+psycopg2://postgres:aadimilihani@localhost:5432/intelliject"
+
 engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
-
-# Declare Base
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
+
 
 # History table model
 class PDFHistory(Base):
